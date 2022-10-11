@@ -18,7 +18,8 @@ if __name__ == '__main__':
     parser.add_argument('--test', action='store_true', help="test mode")
     parser.add_argument('--save_mesh', action='store_true', help="export an obj mesh with texture")
     parser.add_argument('--eval_interval', type=int, default=10, help="evaluate on the valid set every interval epochs")
-    parser.add_argument('--workspace', type=str, default='workspace')
+    #parser.add_argument('--workspace', type=str, default='workspace')
+    parser.add_argument('--workspace', type=str, default='/home/milio/linked_tmp/logs/dreamfusion')
     parser.add_argument('--guidance', type=str, default='stable-diffusion', help='choose from [stable-diffusion, clip]')
     parser.add_argument('--seed', type=int, default=0)
 
@@ -67,8 +68,11 @@ if __name__ == '__main__':
     parser.add_argument('--light_theta', type=float, default=60, help="default GUI light direction in [0, 180], corresponding to elevation [90, -90]")
     parser.add_argument('--light_phi', type=float, default=0, help="default GUI light direction in [0, 360), azimuth")
     parser.add_argument('--max_spp', type=int, default=1, help="GUI rendering max sample per pixel")
+    parser.add_argument('--sd_version', type=str, default='CompVis', help="choose from [CompVis, waifu]")
 
     opt = parser.parse_args()
+
+    opt.workspace = os.path.join(opt.workspace, opt.text.replace(' ', '_'), opt.sd_version + '_'+ str(opt.seed))
 
     if opt.O:
         opt.fp16 = True
@@ -123,7 +127,8 @@ if __name__ == '__main__':
         
         if opt.guidance == 'stable-diffusion':
             from nerf.sd import StableDiffusion
-            guidance = StableDiffusion(device)
+            #guidance = StableDiffusion(device)
+            guidance = StableDiffusion(device, sd_version = opt.sd_version)
         elif opt.guidance == 'clip':
             from nerf.clip import CLIP
             guidance = CLIP(device)
